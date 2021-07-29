@@ -14,5 +14,5 @@ def register_plugin(registry):
     registry.register_subcommand(commands.create_gadlcd_command)
 
 
-__version__ = '0.2.3'
+__version__ = '0.2.0'
 """Library version"""
