@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 
 def create_gadlcd_command(cli):
     """Creates the gadlcd command line utility."""
-    @cli.group("ga-dlcd",short_help=(
-        "Commands for working with Geoscience Australia Dynamic Land Cover Dataset Version 2 data"
-        ),
+    @cli.group(
+        "ga-dlcd",
+        short_help="Commands for working with GA DLCD data",
     )
     def gadlcd():
         pass

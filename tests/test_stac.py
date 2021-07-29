@@ -57,7 +57,7 @@ class StacTest(unittest.TestCase):
 
             # Create stac collection
             json_path = os.path.join(tmp_dir, "test.json")
-    
+
             stac.create_collection(json_path)
 
             jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
