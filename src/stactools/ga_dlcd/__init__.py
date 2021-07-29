@@ -2,7 +2,9 @@ import stactools.core
 from stactools.ga_dlcd.stac import create_collection, create_item
 from stactools.ga_dlcd.cog import create_cog
 
-__all__ = [create_collection, create_item, create_cog]
+__all__ = [
+    create_collection.__name__, create_item.__name__, create_cog.__name__
+]
 
 stactools.core.use_fsspec()
 

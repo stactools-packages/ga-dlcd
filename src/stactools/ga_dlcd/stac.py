@@ -28,13 +28,14 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
 
     item_id = cog_href.split(".")[0].split("/")[-1]
 
-    years = re.search("(?<=DLCD_v2-1_MODIS_EVI_).*",
-                      item_id).group().split("_")[1].split("-")
+    match = re.search("(?<=DLCD_v2-1_MODIS_EVI_).*", item_id)
+    assert match
+    years = match.group().split("_")[1].split("-")
 
     utc = pytz.utc
 
     dataset_datetime = utc.localize(datetime.strptime(years[0], '%Y%m%d'))
-    start_datetime = utc.localize(datetime.strptime(years[0], '%Y%m%d'))
+    start_datetime = dataset_datetime
     end_datetime = utc.localize(datetime.strptime(years[1], '%Y%m%d'))
 
     title = f"{GADLCD_TITLE} {start_datetime.year} - {end_datetime.year}"
@@ -101,9 +102,8 @@ def create_collection(metadata_url: str):
 
     utc = pytz.utc
 
-    dataset_datetime = utc.localize(datetime.strptime(GADLCD_START_YEAR, "%Y"))
+    start_datetime = utc.localize(datetime.strptime(GADLCD_START_YEAR, "%Y"))
     end_datetime = utc.localize(datetime.strptime(GADLCD_END_YEAR, "%Y"))
-    start_datetime = dataset_datetime
 
     collection = pystac.Collection(
         id=GADLCD_ID,
@@ -112,8 +112,9 @@ def create_collection(metadata_url: str):
         providers=[GADLCD_PROVIDER],
         license=LICENSE,
         extent=pystac.Extent(
-            pystac.SpatialExtent(GADLCD_BOUNDING_BOX),
-            pystac.TemporalExtent([start_datetime, end_datetime]),
+            pystac.SpatialExtent([GADLCD_BOUNDING_BOX]),
+            pystac.TemporalExtent(
+                [[start_datetime or None, end_datetime or None]]),
         ),
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
     )
