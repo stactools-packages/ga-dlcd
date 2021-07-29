@@ -89,7 +89,7 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
     return item
 
 
-def create_collection(metadata_url: str):
+def create_collection(metadata_url: str) -> pystac.Collection:
     """Create a STAC Collection.
 
     Args:
