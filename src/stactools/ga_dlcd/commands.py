@@ -7,13 +7,13 @@ from stactools.ga_dlcd import cog, stac
 logger = logging.getLogger(__name__)
 
 
-def create_gadlcd_command(cli):
+def create_gadlcd_command(cli: click.Group) -> click.Command:
     """Creates the gadlcd command line utility."""
     @cli.group(
         "ga-dlcd",
         short_help="Commands for working with GA DLCD data",
     )
-    def gadlcd():
+    def gadlcd() -> None:
         pass
 
     @gadlcd.command(
@@ -26,7 +26,7 @@ def create_gadlcd_command(cli):
         required=True,
         help="The output directory for the STAC Collection json",
     )
-    def create_collection_command(destination: str):
+    def create_collection_command(destination: str) -> None:
         """Creates a STAC Collection from gadlcd metadata
 
         Args:
@@ -48,7 +48,7 @@ def create_gadlcd_command(cli):
                   "--source",
                   required=True,
                   help="Path to an input GeoTiff")
-    def create_cog_command(destination: str, source: str):
+    def create_cog_command(destination: str, source: str) -> None:
         """Generate a COG from a GeoTiff. The COG will be saved in the desination
         with `_cog.tif` appended to the name.
 
@@ -75,7 +75,7 @@ def create_gadlcd_command(cli):
         help="The output directory for the STAC json",
     )
     @click.option("-c", "--cog", required=True, help="COG href")
-    def create_item_command(destination: str, cog: str):
+    def create_item_command(destination: str, cog: str) -> None:
         """Generate a STAC item using the metadata, with an asset url as provided.
 
         Args:
