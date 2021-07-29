@@ -1,8 +1,7 @@
 # flake8: noqa
 
 from pyproj import CRS
-from pystac import Provider, ProviderRole
-from pystac import Link
+from pystac import Link, Provider, ProviderRole
 
 GADLCD_ID = "GADLCD"
 GADLCD_EPSG = 4326

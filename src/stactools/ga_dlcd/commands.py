@@ -2,9 +2,7 @@ import click
 import logging
 import os
 
-from stactools.ga_dlcd import stac
-from stactools.ga_dlcd import cog
-# from stactools.ga_dlcd.constants import ___
+from stactools.ga_dlcd import cog, stac
 
 logger = logging.getLogger(__name__)
 
