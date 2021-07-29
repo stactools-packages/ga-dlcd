@@ -1,7 +1,7 @@
 # flake8: noqa
 
 from pyproj import CRS
-from pystac import Provider
+from pystac import Provider, ProviderRole
 from pystac import Link
 
 GADLCD_ID = "GADLCD"
@@ -19,7 +19,7 @@ DESCRIPTION = """The Dynamic Land Cover Dataset uses a standard land cover class
 
 GADLCD_PROVIDER = Provider(
     name="Geoscience Australia",
-    roles=["producer", "processor", "host"],
+    roles=[ProviderRole.PRODUCER, ProviderRole.PROCESSOR, ProviderRole.HOST],
     url=
     "https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/83868")
 
