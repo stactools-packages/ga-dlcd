@@ -1,32 +1,21 @@
-
 import logging
-import os
 from datetime import datetime
 import re
 import shapely
 import rasterio
-from dateutil.relativedelta import relativedelta
 import pytz
 from pystac.extensions.projection import ProjectionExtension
-from stactools.ga_dlcd.constants import (
-    GADLCD_ID,
-    GADLCD_EPSG,
-    GADLCD_TITLE,
-    DESCRIPTION,
-    GADLCD_PROVIDER,
-    LICENSE,
-    LICENSE_LINK,
-    GADLCD_BOUNDING_BOX,
-    GADLCD_START_YEAR,
-    GADLCD_END_YEAR
-)
+from stactools.ga_dlcd.constants import (GADLCD_ID, GADLCD_EPSG, GADLCD_TITLE,
+                                         DESCRIPTION, GADLCD_PROVIDER, LICENSE,
+                                         LICENSE_LINK, GADLCD_BOUNDING_BOX,
+                                         GADLCD_START_YEAR, GADLCD_END_YEAR)
 
 import pystac
-from shapely.geometry import Polygon
 
 logger = logging.getLogger(__name__)
 
-def create_item(metadata_url: str,cog_href: str) -> pystac.Item:
+
+def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
     """Creates a STAC item for Geoscience Australia Dynamic Land Cover Dataset Version 2 dataset.
 
     Args:
@@ -39,27 +28,21 @@ def create_item(metadata_url: str,cog_href: str) -> pystac.Item:
 
     item_id = cog_href.split(".")[0].split("/")[-1]
 
-    try:
-        years = re.search("(?<=DLCD_v2-1_MODIS_EVI_).*",item_id).group().split("_")[1].split("-")
-    except:
-        print("COG file name is not in the correct format. File name must start with 'DLCD_v2-1_MODIS_EVI_'")
+    years = re.search("(?<=DLCD_v2-1_MODIS_EVI_).*",
+                      item_id).group().split("_")[1].split("-")
 
-    
     utc = pytz.utc
 
-    dataset_datetime = utc.localize(datetime.strptime(years[0],'%Y%m%d'))
-    start_datetime = utc.localize(datetime.strptime(years[0],'%Y%m%d'))
-    end_datetime = utc.localize(datetime.strptime(years[1],'%Y%m%d'))
+    dataset_datetime = utc.localize(datetime.strptime(years[0], '%Y%m%d'))
+    start_datetime = utc.localize(datetime.strptime(years[0], '%Y%m%d'))
+    end_datetime = utc.localize(datetime.strptime(years[1], '%Y%m%d'))
 
     title = f"{GADLCD_TITLE} {start_datetime.year} - {end_datetime.year}"
-    
+
     polygon = shapely.geometry.box(*GADLCD_BOUNDING_BOX, ccw=True)
     coordinates = [list(i) for i in list(polygon.exterior.coords)]
 
-    geometry = {
-                "type":"Polygon",
-                "coordinates": [coordinates]
-                }
+    geometry = {"type": "Polygon", "coordinates": [coordinates]}
 
     properties = {
         "title": title,
@@ -88,7 +71,6 @@ def create_item(metadata_url: str,cog_href: str) -> pystac.Item:
 
     item_projection.transform = list(src.transform)
     item_projection.shape = [src.height, src.width]
-
 
     item.add_asset(
         "landcover change",

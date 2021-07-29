@@ -7,7 +7,9 @@ from stactools.ga_dlcd.commands import create_gadlcd_command
 from stactools.testing import CliTestCase
 
 from tests import test_data
+
 logger = logging.getLogger(__name__)
+
 
 class CreateCollectionTest(CliTestCase):
     def create_subcommand_functions(self):
@@ -39,9 +41,8 @@ class CreateCollectionTest(CliTestCase):
 
             for path in paths:
 
-                result = self.run_command([
-                    "ga-dlcd", "create-cog", "-d", tmp_dir, "-s", path
-                ])
+                result = self.run_command(
+                    ["ga-dlcd", "create-cog", "-d", tmp_dir, "-s", path])
                 self.assertEqual(result.exit_code,
                                  0,
                                  msg="\n{}".format(result.output))
@@ -61,12 +62,11 @@ class CreateCollectionTest(CliTestCase):
             ]
 
             for path in paths:
-                result = self.run_command([
-                        "ga-dlcd", "create-item", "-d", tmp_dir, "-c", path
-                    ])
+                result = self.run_command(
+                    ["ga-dlcd", "create-item", "-d", tmp_dir, "-c", path])
                 self.assertEqual(result.exit_code,
-                                0,
-                                msg="\n{}".format(result.output))
+                                 0,
+                                 msg="\n{}".format(result.output))
 
                 jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
                 self.assertEqual(len(jsons), 1)

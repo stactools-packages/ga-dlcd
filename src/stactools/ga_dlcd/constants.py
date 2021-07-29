@@ -21,9 +21,8 @@ GADLCD_PROVIDER = Provider(
     name="Geoscience Australia",
     roles=["producer", "processor", "host"],
     url=
-    "https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/83868"
-)
+    "https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/83868")
 
-GADLCD_BOUNDING_BOX = [96.00,-44.00,168.00,-9.00]
+GADLCD_BOUNDING_BOX = [96.00, -44.00, 168.00, -9.00]
 GADLCD_START_YEAR = '2001'
 GADLCD_END_YEAR = '2015'
