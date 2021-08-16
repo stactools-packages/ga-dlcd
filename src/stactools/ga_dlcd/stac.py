@@ -83,7 +83,7 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
     item_labels.label_methods = [LabelMethod('automated')]
     item_labels.label_properties = [i for i in LABEL_CLASSES.keys()]
 
-    classes = LabelClasses(item_labels.label_properties)
+    classes = LabelClasses(LABEL_CLASSES)
     item_labels.label_classes = [
         classes.create(classes=[v], name=k) for k, v in LABEL_CLASSES.items()
     ]
