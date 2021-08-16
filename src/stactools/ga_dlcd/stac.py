@@ -5,10 +5,12 @@ import shapely
 import rasterio
 import pytz
 from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.label import LabelExtension, LabelClasses, LabelTask, LabelType, LabelMethod
 from stactools.ga_dlcd.constants import (GADLCD_ID, GADLCD_EPSG, GADLCD_TITLE,
                                          DESCRIPTION, GADLCD_PROVIDER, LICENSE,
                                          LICENSE_LINK, GADLCD_BOUNDING_BOX,
                                          GADLCD_START_YEAR, GADLCD_END_YEAR)
+from stactools.ga_dlcd.labels import LABEL_CLASSES
 
 import pystac
 
@@ -73,8 +75,21 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
     item_projection.transform = list(src.transform)
     item_projection.shape = [src.height, src.width]
 
+    item_labels = LabelExtension.ext(item, add_if_missing=True)
+
+    item_labels.label_description = "GA DLCD dataset shows land covers clustered into 22 classes."
+    item_labels.label_type = LabelType('raster')
+    item_labels.label_tasks = [LabelTask("classification")]
+    item_labels.label_methods = [LabelMethod('automated')]
+    item_labels.label_properties = [i for i in LABEL_CLASSES.keys()]
+
+    classes = LabelClasses(item_labels.label_properties)
+    item_labels.label_classes = [
+        classes.create(classes=[v], name=k) for k, v in LABEL_CLASSES.items()
+    ]
+
     item.add_asset(
-        "landcover change",
+        "data",
         pystac.Asset(
             href=cog_href,
             media_type=pystac.MediaType.COG,
