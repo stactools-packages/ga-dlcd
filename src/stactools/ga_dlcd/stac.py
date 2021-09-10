@@ -1,19 +1,33 @@
 import logging
-from datetime import datetime
 import re
-import shapely
-import rasterio
-import pytz
-from pystac.extensions.projection import ProjectionExtension
-from pystac.extensions.label import LabelExtension, LabelClasses, LabelTask, LabelType, LabelMethod
-from stactools.ga_dlcd.constants import (CLASSIFICATION_VALUES, GADLCD_ID,
-                                         GADLCD_EPSG, GADLCD_TITLE,
-                                         DESCRIPTION, GADLCD_PROVIDERS,
-                                         LICENSE, LICENSE_LINK,
-                                         GADLCD_BOUNDING_BOX,
-                                         GADLCD_START_YEAR, GADLCD_END_YEAR)
+from datetime import datetime
 
 import pystac
+import pytz
+import rasterio
+import shapely
+from pystac.extensions.label import (
+    LabelClasses,
+    LabelExtension,
+    LabelMethod,
+    LabelTask,
+    LabelType,
+)
+from pystac.extensions.projection import ProjectionExtension
+
+from stactools.ga_dlcd.constants import (
+    CLASSIFICATION_VALUES,
+    DESCRIPTION,
+    GADLCD_BOUNDING_BOX,
+    GADLCD_END_YEAR,
+    GADLCD_EPSG,
+    GADLCD_ID,
+    GADLCD_PROVIDERS,
+    GADLCD_START_YEAR,
+    GADLCD_TITLE,
+    LICENSE,
+    LICENSE_LINK,
+)
 
 logger = logging.getLogger(__name__)
 

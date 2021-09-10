@@ -1,11 +1,11 @@
+import logging
 import os.path
 from tempfile import TemporaryDirectory
-import logging
-import pystac
 
-from stactools.ga_dlcd.commands import create_gadlcd_command
+import pystac
 from stactools.testing import CliTestCase
 
+from stactools.ga_dlcd.commands import create_gadlcd_command
 from tests import test_data
 
 logger = logging.getLogger(__name__)

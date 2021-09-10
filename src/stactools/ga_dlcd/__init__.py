@@ -1,8 +1,9 @@
 import stactools.core
 from stactools.cli import Registry
+
 from stactools.ga_dlcd import commands
-from stactools.ga_dlcd.stac import create_collection, create_item
 from stactools.ga_dlcd.cog import create_cog
+from stactools.ga_dlcd.stac import create_collection, create_item
 
 __all__ = [
     create_collection.__name__, create_item.__name__, create_cog.__name__

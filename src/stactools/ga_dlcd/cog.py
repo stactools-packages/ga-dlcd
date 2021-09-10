@@ -1,7 +1,7 @@
 import logging
+from subprocess import CalledProcessError, check_output
 
 import rasterio
-from subprocess import CalledProcessError, check_output
 
 from stactools.ga_dlcd.constants import COLOUR_MAP, NO_DATA_VALUE
 

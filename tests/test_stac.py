@@ -1,11 +1,10 @@
 import os
-from tempfile import TemporaryDirectory
 import unittest
+from tempfile import TemporaryDirectory
 
 import pystac
 
 from stactools.ga_dlcd import cog, stac
-
 from tests import test_data
 
 
