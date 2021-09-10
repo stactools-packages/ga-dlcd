@@ -1,11 +1,14 @@
 import logging
 import re
 from datetime import datetime
+from typing import Any, List
 
+import fsspec
 import pystac
 import pytz
 import rasterio
 import shapely
+from pystac.extensions.file import FileExtension
 from pystac.extensions.label import (
     LabelClasses,
     LabelExtension,
@@ -14,6 +17,12 @@ from pystac.extensions.label import (
     LabelType,
 )
 from pystac.extensions.projection import ProjectionExtension
+from pystac.extensions.raster import (
+    DataType,
+    RasterBand,
+    RasterExtension,
+    Sampling,
+)
 
 from stactools.ga_dlcd.constants import (
     CLASSIFICATION_VALUES,
@@ -102,15 +111,54 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
         LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "")
     ]
 
-    item.add_asset(
-        "data",
-        pystac.Asset(
-            href=cog_href,
-            media_type=pystac.MediaType.COG,
-            roles=["data"],
-            title=title,
-        ),
+    # COG Asset
+    cog_asset = pystac.Asset(
+        href=cog_href,
+        media_type=pystac.MediaType.COG,
+        roles=["data"],
+        title=title,
     )
+    item.add_asset("data", cog_asset)
+
+    # File Extension
+    cog_asset_file = FileExtension.ext(cog_asset, add_if_missing=True)
+    # The following odd type annotation is needed
+    mapping: List[Any] = [{
+        "values": [value],
+        "summary": summary
+    } for value, summary in CLASSIFICATION_VALUES.items()]
+    cog_asset_file.values = mapping
+    with fsspec.open(cog_href) as file:
+        size = file.size
+        if size is not None:
+            cog_asset_file.size = size
+
+    # Raster Extension
+    cog_asset_raster = RasterExtension.ext(cog_asset, add_if_missing=True)
+    cog_asset_raster.bands = [
+        RasterBand.create(nodata=0,
+                          sampling=Sampling.AREA,
+                          data_type=DataType.UINT8,
+                          spatial_resolution=250)
+    ]
+
+    # Projection Extension
+    cog_asset_projection = ProjectionExtension.ext(cog_asset,
+                                                   add_if_missing=True)
+    cog_asset_projection.epsg = item_projection.epsg
+    cog_asset_projection.bbox = item_projection.bbox
+    cog_asset_projection.transform = item_projection.transform
+    cog_asset_projection.shape = item_projection.shape
+
+    # Label Extension (doesn't seem to handle Assets properly)
+    cog_asset.extra_fields["label:type"] = item_label.label_type
+    cog_asset.extra_fields["label:tasks"] = item_label.label_tasks
+    cog_asset.extra_fields["label:methods"] = item_label.label_methods,
+    cog_asset.extra_fields["label:properties"] = item_label.label_properties
+    cog_asset.extra_fields["label:description"] = item_label.label_description
+    cog_asset.extra_fields["label:classes"] = [
+        item_label.label_classes[0].to_dict()
+    ]
 
     return item
 
