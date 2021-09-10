@@ -1,6 +1,9 @@
 import logging
 
+import rasterio
 from subprocess import CalledProcessError, check_output
+
+from stactools.ga_dlcd.constants import COLOUR_MAP, NO_DATA_VALUE
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +46,8 @@ def create_cog(
                 "predictor=yes",
                 "-co",
                 "OVERVIEWS=IGNORE_EXISTING",
+                "-a_nodata",
+                str(NO_DATA_VALUE),
                 input_path,
                 output_path,
             ]
@@ -54,6 +59,8 @@ def create_cog(
                 raise
             finally:
                 logger.info(f"output: {str(output)}")
+            with rasterio.open(output_path, "r+") as dataset:
+                dataset.write_colormap(1, COLOUR_MAP)
 
     except Exception:
         logger.error("Failed to process {}".format(output_path))
