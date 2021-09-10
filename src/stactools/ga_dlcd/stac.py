@@ -6,11 +6,12 @@ import rasterio
 import pytz
 from pystac.extensions.projection import ProjectionExtension
 from pystac.extensions.label import LabelExtension, LabelClasses, LabelTask, LabelType, LabelMethod
-from stactools.ga_dlcd.constants import (GADLCD_ID, GADLCD_EPSG, GADLCD_TITLE,
-                                         DESCRIPTION, GADLCD_PROVIDER, LICENSE,
-                                         LICENSE_LINK, GADLCD_BOUNDING_BOX,
+from stactools.ga_dlcd.constants import (CLASSIFICATION_VALUES, GADLCD_ID,
+                                         GADLCD_EPSG, GADLCD_TITLE,
+                                         DESCRIPTION, GADLCD_PROVIDERS,
+                                         LICENSE, LICENSE_LINK,
+                                         GADLCD_BOUNDING_BOX,
                                          GADLCD_START_YEAR, GADLCD_END_YEAR)
-from stactools.ga_dlcd.labels import LABEL_CLASSES
 
 import pystac
 
@@ -68,24 +69,23 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
 
     item_projection = ProjectionExtension.ext(item, add_if_missing=True)
     item_projection.epsg = GADLCD_EPSG
-    item_projection.bbox = GADLCD_BOUNDING_BOX
+    with rasterio.open(cog_href) as src:
+        item_projection.bbox = list(src.bounds)
+        item_projection.transform = list(src.transform)
+        item_projection.shape = [src.height, src.width]
 
-    src = rasterio.open(cog_href)
-
-    item_projection.transform = list(src.transform)
-    item_projection.shape = [src.height, src.width]
-
-    item_labels = LabelExtension.ext(item, add_if_missing=True)
-
-    item_labels.label_description = "GA DLCD dataset shows land covers clustered into 22 classes."
-    item_labels.label_type = LabelType('raster')
-    item_labels.label_tasks = [LabelTask("classification")]
-    item_labels.label_methods = [LabelMethod('automated')]
-    item_labels.label_properties = [i for i in LABEL_CLASSES.keys()]
-
-    classes = LabelClasses(LABEL_CLASSES)
-    item_labels.label_classes = [
-        classes.create(classes=[v], name=k) for k, v in LABEL_CLASSES.items()
+    item_label = LabelExtension.ext(item, add_if_missing=True)
+    item_label.label_description = "GA DLCD dataset shows land covers clustered into 22 classes."
+    item_label.label_type = LabelType.RASTER
+    item_label.label_tasks = [LabelTask.CLASSIFICATION]
+    item_label.label_methods = [LabelMethod.AUTOMATED]
+    item_label.label_properties = None
+    item_label.label_classes = [
+        # TODO: The STAC Label extension JSON Schema is incorrect.
+        # https://github.com/stac-extensions/label/pull/8
+        # https://github.com/stac-utils/pystac/issues/611
+        # When it is fixed, this should be None, not the empty string.
+        LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "")
     ]
 
     item.add_asset(
