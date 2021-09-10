@@ -124,7 +124,7 @@ def create_collection(metadata_url: str) -> pystac.Collection:
         id=GADLCD_ID,
         title=GADLCD_TITLE,
         description=DESCRIPTION,
-        providers=[GADLCD_PROVIDER],
+        providers=GADLCD_PROVIDERS,
         license=LICENSE,
         extent=pystac.Extent(
             pystac.SpatialExtent([GADLCD_BOUNDING_BOX]),

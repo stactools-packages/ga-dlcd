@@ -16,11 +16,21 @@ LICENSE_LINK = Link(
 
 DESCRIPTION = """The Dynamic Land Cover Dataset uses a standard land cover classification to show the change in behaviour of land cover across Australia. The DLCD includes data for every 250m by 250m area on the ground, for the period 2001 to 2015."""
 
-GADLCD_PROVIDER = Provider(
-    name="Geoscience Australia",
-    roles=[ProviderRole.PRODUCER, ProviderRole.PROCESSOR, ProviderRole.HOST],
-    url=
-    "https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/83868")
+GADLCD_PROVIDERS = [
+    Provider(name="Geoscience Australia",
+             roles=[
+                 ProviderRole.HOST,
+                 ProviderRole.LICENSOR,
+                 ProviderRole.PROCESSOR,
+                 ProviderRole.PRODUCER,
+             ],
+             url="http://pid.geoscience.gov.au/dataset/ga/83868"),
+    Provider(name="NASA EOSDIS Land Processes DAAC",
+             roles=[
+                 ProviderRole.PRODUCER,
+             ],
+             url="https://lpdaac.usgs.gov/products/mod13q1v006/"),
+]
 
 GADLCD_BOUNDING_BOX = [110.0, -45.004798, 155.009189, -10.0]
 GADLCD_START_YEAR = '2001'
