@@ -9,6 +9,7 @@ import pytz
 import rasterio
 import shapely
 from pystac.extensions.file import FileExtension
+from pystac.extensions.item_assets import AssetDefinition, ItemAssetsExtension
 from pystac.extensions.label import (
     LabelClasses,
     LabelExtension,
@@ -28,6 +29,7 @@ from stactools.ga_dlcd.constants import (
     CLASSIFICATION_VALUES,
     DESCRIPTION,
     GADLCD_BOUNDING_BOX,
+    GADLCD_DESC,
     GADLCD_END_YEAR,
     GADLCD_EPSG,
     GADLCD_ID,
@@ -98,7 +100,7 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
         item_projection.shape = [src.height, src.width]
 
     item_label = LabelExtension.ext(item, add_if_missing=True)
-    item_label.label_description = "GA DLCD dataset shows land covers clustered into 22 classes."
+    item_label.label_description = GADLCD_DESC
     item_label.label_type = LabelType.RASTER
     item_label.label_tasks = [LabelTask.CLASSIFICATION]
     item_label.label_methods = [LabelMethod.AUTOMATED]
@@ -115,10 +117,14 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
     cog_asset = pystac.Asset(
         href=cog_href,
         media_type=pystac.MediaType.COG,
-        roles=["data"],
+        roles=[
+            "data",
+            "labels",
+            "labels-raster",
+        ],
         title=title,
     )
-    item.add_asset("data", cog_asset)
+    item.add_asset("landcover", cog_asset)
 
     # File Extension
     cog_asset_file = FileExtension.ext(cog_asset, add_if_missing=True)
@@ -153,7 +159,6 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
     # Label Extension (doesn't seem to handle Assets properly)
     cog_asset.extra_fields["label:type"] = item_label.label_type
     cog_asset.extra_fields["label:tasks"] = item_label.label_tasks
-    cog_asset.extra_fields["label:methods"] = item_label.label_methods,
     cog_asset.extra_fields["label:properties"] = item_label.label_properties
     cog_asset.extra_fields["label:description"] = item_label.label_description
     cog_asset.extra_fields["label:classes"] = [
@@ -193,5 +198,59 @@ def create_collection(metadata_url: str) -> pystac.Collection:
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
     )
     collection.add_link(LICENSE_LINK)
+
+    collection_label = LabelExtension.summaries(collection,
+                                                add_if_missing=True)
+    collection_label.label_type = [LabelType.RASTER]
+    collection_label.label_tasks = [LabelTask.CLASSIFICATION]
+    collection_label.label_methods = [LabelMethod.AUTOMATED]
+    collection_label.label_properties = None
+    collection_label.label_classes = [
+        # TODO: The STAC Label extension JSON Schema is incorrect.
+        # https://github.com/stac-extensions/label/pull/8
+        # https://github.com/stac-utils/pystac/issues/611
+        # When it is fixed, this should be None, not the empty string.
+        LabelClasses.create(list(CLASSIFICATION_VALUES.values()), "")
+    ]
+
+    collection_proj = ProjectionExtension.summaries(collection,
+                                                    add_if_missing=True)
+    collection_proj.epsg = [GADLCD_EPSG]
+
+    collection_item_asset = ItemAssetsExtension.ext(collection,
+                                                    add_if_missing=True)
+    collection_item_asset.item_assets = {
+        "landcover":
+        AssetDefinition({
+            "type":
+            pystac.MediaType.COG,
+            "roles": [
+                "data",
+                "labels",
+                "labels-raster",
+            ],
+            "title":
+            "Land cover of Canada COG",
+            "raster:bands": [
+                RasterBand.create(nodata=0,
+                                  sampling=Sampling.AREA,
+                                  data_type=DataType.UINT8,
+                                  spatial_resolution=250).to_dict()
+            ],
+            "file:values": [{
+                "values": [value],
+                "summary": summary
+            } for value, summary in CLASSIFICATION_VALUES.items()],
+            "label:type":
+            collection_label.label_type[0],
+            "label:tasks":
+            collection_label.label_tasks,
+            "label:properties":
+            None,
+            "label:classes": [collection_label.label_classes[0].to_dict()],
+            "proj:epsg":
+            collection_proj.epsg[0]
+        }),
+    }
 
     return collection
