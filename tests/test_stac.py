@@ -59,7 +59,7 @@ class StacTest(unittest.TestCase):
             # Create stac collection
             json_path = os.path.join(tmp_dir, "collection.json")
 
-            collection = stac.create_collection(tmp_dir)
+            collection = stac.create_collection()
             collection.set_self_href(json_path)
             collection.save()
 

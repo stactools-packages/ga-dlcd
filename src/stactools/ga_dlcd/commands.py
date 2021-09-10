@@ -36,7 +36,7 @@ def create_gadlcd_command(cli: click.Group) -> click.Command:
             Callable
         """
         output_path = os.path.join(destination, "collection.json")
-        collection = stac.create_collection(destination)
+        collection = stac.create_collection()
         collection.set_self_href(output_path)
         collection.normalize_hrefs(destination)
         collection.save()
