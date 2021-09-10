@@ -1,6 +1,7 @@
-import click
 import logging
 import os
+
+import click
 
 from stactools.ga_dlcd import cog, stac
 
