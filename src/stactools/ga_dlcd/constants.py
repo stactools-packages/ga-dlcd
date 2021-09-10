@@ -7,6 +7,7 @@ GADLCD_ID = "GADLCD"
 GADLCD_EPSG = 4326
 GADLCD_CRS = CRS.from_epsg(GADLCD_EPSG)
 GADLCD_TITLE = "Geoscience Australia Dynamic Land Cover Change"
+GADLCD_DESC = "GA DLCD dataset shows land covers clustered into 22 classes."
 LICENSE = "CC-BY-4.0"
 LICENSE_LINK = Link(
     rel="license",
