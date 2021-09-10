@@ -17,9 +17,8 @@ class CreateCollectionTest(CliTestCase):
 
     def test_create_collection(self):
         with TemporaryDirectory() as tmp_dir:
-            json_path = os.path.join(tmp_dir, "test.json")
             result = self.run_command(
-                ["ga-dlcd", "create-collection", "-d", json_path])
+                ["ga-dlcd", "create-collection", "-d", tmp_dir])
             self.assertEqual(result.exit_code,
                              0,
                              msg="\n{}".format(result.output))

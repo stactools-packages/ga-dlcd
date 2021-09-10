@@ -34,7 +34,12 @@ def create_gadlcd_command(cli: click.Group) -> click.Command:
         Returns:
             Callable
         """
-        stac.create_collection(destination)
+        output_path = os.path.join(destination, "collection.json")
+        collection = stac.create_collection(destination)
+        collection.set_self_href(output_path)
+        collection.normalize_hrefs(destination)
+        collection.save()
+        collection.validate()
 
     @gadlcd.command(
         "create-cog",
@@ -86,6 +91,10 @@ def create_gadlcd_command(cli: click.Group) -> click.Command:
         output_path = os.path.join(destination,
                                    os.path.basename(cog)[:-4] + ".json")
 
-        stac.create_item(output_path, cog)
+        item = stac.create_item(output_path, cog)
+        item.set_self_href(output_path)
+        item.make_asset_hrefs_relative()
+        item.save_object()
+        item.validate()
 
     return gadlcd
