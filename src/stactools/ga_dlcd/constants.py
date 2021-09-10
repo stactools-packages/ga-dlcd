@@ -22,7 +22,7 @@ GADLCD_PROVIDER = Provider(
     url=
     "https://ecat.ga.gov.au/geonetwork/srv/eng/catalog.search#/metadata/83868")
 
-GADLCD_BOUNDING_BOX = [96.00, -44.00, 168.00, -9.00]
+GADLCD_BOUNDING_BOX = [110.0, -45.004798, 155.009189, -10.0]
 GADLCD_START_YEAR = '2001'
 GADLCD_END_YEAR = '2015'
 
