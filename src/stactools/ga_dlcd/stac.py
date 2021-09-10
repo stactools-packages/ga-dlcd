@@ -168,11 +168,10 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
     return item
 
 
-def create_collection(metadata_url: str) -> pystac.Collection:
+def create_collection() -> pystac.Collection:
     """Create a STAC Collection.
 
     Args:
-        metadata_url (str): Location to save the output STAC Collection json
 
     Returns:
         pystac.Collection: pystac collection object
