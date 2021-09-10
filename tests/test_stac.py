@@ -41,7 +41,9 @@ class StacTest(unittest.TestCase):
             for path in paths:
                 # Create stac item
                 json_path = os.path.join(tmp_dir, "test.json")
-                stac.create_item(json_path, path)
+                item = stac.create_item(json_path, path)
+                item.set_self_href(json_path)
+                item.save_object()
 
                 jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
                 self.assertEqual(len(jsons), 1)
@@ -56,9 +58,11 @@ class StacTest(unittest.TestCase):
         with TemporaryDirectory() as tmp_dir:
 
             # Create stac collection
-            json_path = os.path.join(tmp_dir, "test.json")
+            json_path = os.path.join(tmp_dir, "collection.json")
 
-            stac.create_collection(json_path)
+            collection = stac.create_collection(tmp_dir)
+            collection.set_self_href(json_path)
+            collection.save()
 
             jsons = [p for p in os.listdir(tmp_dir) if p.endswith(".json")]
             self.assertEqual(len(jsons), 1)

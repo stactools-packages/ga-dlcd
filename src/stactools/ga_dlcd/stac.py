@@ -98,9 +98,6 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
         ),
     )
 
-    item.set_self_href(metadata_url)
-    item.save_object()
-
     return item
 
 
@@ -134,8 +131,5 @@ def create_collection(metadata_url: str) -> pystac.Collection:
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
     )
     collection.add_link(LICENSE_LINK)
-
-    collection.set_self_href(metadata_url)
-    collection.save_object()
 
     return collection
