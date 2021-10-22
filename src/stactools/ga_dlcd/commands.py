@@ -96,13 +96,62 @@ def create_gadlcd_command(cli: click.Group) -> click.Command:
             cog (str): location of a COG asset for the item
         """
 
-        output_path = os.path.join(destination,
-                                   os.path.basename(cog)[:-4] + ".json")
+        output_path = os.path.join(
+            destination,
+            os.path.basename(cog).replace(".tif", ".json"))
 
-        item = stac.create_item(output_path, cog)
+        item = stac.create_item(cog)
         item.set_self_href(output_path)
         item.make_asset_hrefs_relative()
         item.save_object()
         item.validate()
+
+    @gadlcd.command(
+        "populate-full-collection",
+        short_help="Create a STAC Collection with all of the Items and Assets",
+    )
+    @click.option(
+        "-d",
+        "--destination",
+        required=True,
+        help="The output directory",
+    )
+    @click.option(
+        "-s",
+        "--source",
+        required=True,
+        help="Dataset directory",
+    )
+    def populate_full_collection(destination: str, source: str) -> None:
+        """Convert the dataset to COGs, and build the STAC Items and Collection
+
+        Args:
+            destination (str): Local directory to save output COGs
+            source (str): A directory containing the GA-DLCD dataset TIFFs
+        """
+        if not os.path.isdir(destination):
+            raise IOError(f'Destination folder "{destination}" not found')
+        if not os.path.isdir(source):
+            raise IOError(f'Source folder "{source}" not found')
+
+        collection = stac.create_collection()
+        collection.normalize_hrefs(destination)
+        collection.save(dest_href=destination)
+        for tiff in os.listdir(source):
+            if tiff.endswith(".tif"):
+                logger.info(f"Processing {tiff}")
+                cog_path = os.path.join(destination, tiff)
+                cog.create_cog(os.path.join(source, tiff), cog_path)
+
+                item = stac.create_item(cog_href=cog_path)
+                collection.add_item(item)
+                item_path = cog_path.replace(".tif", ".json")
+                item.set_self_href(item_path)
+                item.make_asset_hrefs_relative()
+                item.validate()
+
+        logger.info("Saving collection")
+        collection.save(dest_href=destination)
+        collection.validate()
 
     return gadlcd
