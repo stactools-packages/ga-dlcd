@@ -17,4 +17,3 @@ def register_plugin(registry: Registry) -> None:
 
 
 __version__ = '0.2.0'
-"""Library version"""
