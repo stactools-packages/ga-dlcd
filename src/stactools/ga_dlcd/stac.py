@@ -2,7 +2,7 @@ import logging
 import os
 import re
 from datetime import datetime, timedelta, timezone
-from typing import Any, List
+from typing import Any, List, Optional
 
 import fsspec
 import pystac
@@ -24,6 +24,7 @@ from pystac.extensions.raster import (
     RasterExtension,
     Sampling,
 )
+from stactools.core.io import ReadHrefModifier
 
 from stactools.ga_dlcd.constants import (
     CLASSIFICATION_VALUES,
@@ -49,7 +50,10 @@ from stactools.ga_dlcd.constants import (
 logger = logging.getLogger(__name__)
 
 
-def create_item(cog_href: str) -> pystac.Item:
+def create_item(
+    cog_href: str,
+    cog_href_modifier: Optional[ReadHrefModifier] = None,
+) -> pystac.Item:
     """Creates a STAC item for Geoscience Australia Dynamic Land Cover Dataset Version 2 dataset.
 
     Args:
@@ -59,6 +63,11 @@ def create_item(cog_href: str) -> pystac.Item:
     Returns:
         pystac.Item: STAC Item object.
     """
+
+    if cog_href_modifier:
+        cog_access_href = cog_href_modifier(cog_href)
+    else:
+        cog_access_href = cog_href
 
     item_id = os.path.basename(cog_href).replace(".tif", "")
     logger.info(f"Creating Item {item_id}")
@@ -118,8 +127,8 @@ def create_item(cog_href: str) -> pystac.Item:
     item_projection = ProjectionExtension.ext(item, add_if_missing=True)
     item_projection.epsg = GADLCD_EPSG
     item_projection.wkt2 = GADLCD_CRS_WKT
-    logger.debug(f"Opening COG with rasterio: {cog_href}")
-    with rasterio.open(cog_href) as src:
+    logger.debug(f"Opening COG with rasterio: {cog_access_href}")
+    with rasterio.open(cog_access_href) as src:
         item_projection.bbox = list(src.bounds)
         item_projection.transform = list(src.transform)
         item_projection.shape = [src.height, src.width]
@@ -159,8 +168,8 @@ def create_item(cog_href: str) -> pystac.Item:
         "summary": summary
     } for value, summary in CLASSIFICATION_VALUES.items()]
     cog_asset_file.values = mapping
-    logger.debug(f"Opening COG with fsspec: {cog_href}")
-    with fsspec.open(cog_href) as file:
+    logger.debug(f"Opening COG with fsspec: {cog_access_href}")
+    with fsspec.open(cog_access_href) as file:
         size = file.size
         if size is not None:
             cog_asset_file.size = size
