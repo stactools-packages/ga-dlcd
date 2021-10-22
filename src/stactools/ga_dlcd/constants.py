@@ -23,6 +23,16 @@ WMS_CAPABILITIES_LINK = Link(
 
 DESCRIPTION = """The Dynamic Land Cover Dataset uses a standard land cover classification to show the change in behaviour of land cover across Australia. The DLCD includes data for every 250m by 250m area on the ground, for the period 2001 to 2015."""
 
+KEYWORDS = [
+    "Australia",
+    "DLCD",
+    "Geographical maps",
+    "Geoscience Australia",
+    "Land Cover",
+    "MODIS",
+    "Southern Hemisphere",
+]
+
 GADLCD_PROVIDERS = [
     Provider(name="Geoscience Australia",
              roles=[
