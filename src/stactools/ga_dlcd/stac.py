@@ -37,6 +37,7 @@ from stactools.ga_dlcd.constants import (
     GADLCD_PROVIDERS,
     GADLCD_START_YEAR,
     GADLCD_TITLE,
+    KEYWORDS,
     LICENSE,
     LICENSE_LINK,
     THUMBNAIL_URL,
@@ -190,6 +191,7 @@ def create_collection(thumbnail_url: str = THUMBNAIL_URL) -> pystac.Collection:
                 [[start_datetime or None, end_datetime or None]]),
         ),
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
+        keywords=KEYWORDS,
     )
     collection.add_link(LICENSE_LINK)
     collection.add_link(WMS_CAPABILITIES_LINK)
