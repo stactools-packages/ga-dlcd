@@ -33,6 +33,8 @@ GADLCD_PROVIDERS = [
              url="https://lpdaac.usgs.gov/products/mod13q1v006/"),
 ]
 
+THUMBNAIL_URL = "https://www.ga.gov.au/__data/assets/image/0013/16510/ga-logo.jpg"
+
 GADLCD_BOUNDING_BOX = [110.0, -45.004798, 155.009189, -10.0]
 GADLCD_START_YEAR = '2001'
 GADLCD_END_YEAR = '2015'
