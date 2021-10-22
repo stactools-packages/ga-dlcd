@@ -272,8 +272,6 @@ def create_collection(thumbnail_url: str = THUMBNAIL_URL) -> pystac.Collection:
                 "labels",
                 "labels-raster",
             ],
-            "title":
-            "Land cover of Canada COG",
             "raster:bands": [
                 RasterBand.create(nodata=NO_DATA_VALUE,
                                   sampling=Sampling.AREA,
