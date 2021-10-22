@@ -29,6 +29,7 @@ from stactools.ga_dlcd.constants import (
     CLASSIFICATION_VALUES,
     DESCRIPTION,
     GADLCD_BOUNDING_BOX,
+    GADLCD_CRS_WKT,
     GADLCD_DESC,
     GADLCD_END_YEAR,
     GADLCD_EPSG,
@@ -94,6 +95,7 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
 
     item_projection = ProjectionExtension.ext(item, add_if_missing=True)
     item_projection.epsg = GADLCD_EPSG
+    item_projection.wkt2 = GADLCD_CRS_WKT
     with rasterio.open(cog_href) as src:
         item_projection.bbox = list(src.bounds)
         item_projection.transform = list(src.transform)
