@@ -226,11 +226,17 @@ def create_collection(thumbnail_url: str = THUMBNAIL_URL) -> pystac.Collection:
     collection.add_link(LICENSE_LINK)
     collection.add_link(WMS_CAPABILITIES_LINK)
 
+    if thumbnail_url.endswith(".png"):
+        thumb_media_type = pystac.MediaType.PNG
+    elif thumbnail_url.endswith(".jpg") or thumbnail_url.endswith(".jpeg"):
+        thumb_media_type = pystac.MediaType.JPEG
+    else:
+        raise ValueError(f"Unrecognized file type for {thumbnail_url}")
     collection.add_asset(
         "thumbnail",
         pystac.Asset(
             href=thumbnail_url,
-            media_type=pystac.MediaType.PNG,
+            media_type=thumb_media_type,
             roles=["thumbnail"],
             title=GADLCD_TITLE,
         ),
