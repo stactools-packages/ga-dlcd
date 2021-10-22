@@ -14,6 +14,12 @@ LICENSE_LINK = Link(
     target="https://creativecommons.org/licenses/by/4.0/legalcode",
     title="Creative Commons Attribution 4.0 International",
 )
+WMS_CAPABILITIES_LINK = Link(
+    rel="WMS",
+    target=
+    "http://services.eos.ga.gov.au/geoserver/nemo/wms?request=GetCapabilities",
+    title="GA DLCD WMS",
+)
 
 DESCRIPTION = """The Dynamic Land Cover Dataset uses a standard land cover classification to show the change in behaviour of land cover across Australia. The DLCD includes data for every 250m by 250m area on the ground, for the period 2001 to 2015."""
 

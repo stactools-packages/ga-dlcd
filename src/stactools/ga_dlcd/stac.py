@@ -40,6 +40,7 @@ from stactools.ga_dlcd.constants import (
     LICENSE,
     LICENSE_LINK,
     THUMBNAIL_URL,
+    WMS_CAPABILITIES_LINK,
 )
 
 logger = logging.getLogger(__name__)
@@ -191,6 +192,7 @@ def create_collection(thumbnail_url: str = THUMBNAIL_URL) -> pystac.Collection:
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
     )
     collection.add_link(LICENSE_LINK)
+    collection.add_link(WMS_CAPABILITIES_LINK)
 
     collection.add_asset(
         "thumbnail",
