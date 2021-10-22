@@ -46,9 +46,7 @@ class CreateCollectionTest(CliTestCase):
                                  0,
                                  msg="\n{}".format(result.output))
 
-                cogs = [
-                    p for p in os.listdir(tmp_dir) if p.endswith("_cog.tif")
-                ]
+                cogs = [p for p in os.listdir(tmp_dir) if p.endswith(".tif")]
                 self.assertEqual(len(cogs), 1)
 
     def test_create_item(self):

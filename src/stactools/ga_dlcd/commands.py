@@ -46,27 +46,34 @@ def create_gadlcd_command(cli: click.Group) -> click.Command:
         "create-cog",
         short_help="Transform Geotiff to Cloud-Optimized Geotiff.",
     )
-    @click.option("-d",
-                  "--destination",
-                  required=True,
-                  help="The output directory for the COG")
-    @click.option("-s",
-                  "--source",
-                  required=True,
-                  help="Path to an input GeoTiff")
+    @click.option(
+        "-d",
+        "--destination",
+        required=True,
+        help="The output directory for the COG",
+    )
+    @click.option(
+        "-s",
+        "--source",
+        required=True,
+        help="Path to an input GeoTiff",
+    )
     def create_cog_command(destination: str, source: str) -> None:
-        """Generate a COG from a GeoTiff. The COG will be saved in the desination
-        with `_cog.tif` appended to the name.
+        """Generate a COG from a GeoTiff. The COG will be saved in the desination directory.
 
         Args:
             destination (str): Local directory to save output COGs
-            source (str): An input GADLCD GeoTiff
+            source (str): An input GA-DLCD GeoTiff
         """
         if not os.path.isdir(destination):
             raise IOError(f'Destination folder "{destination}" not found')
 
-        output_path = os.path.join(destination,
-                                   os.path.basename(source)[:-4] + "_cog.tif")
+        if destination == source:
+            output_path = os.path.join(
+                destination,
+                os.path.basename(source).replace(".tif", "_cog.tif"))
+        else:
+            output_path = os.path.join(destination, os.path.basename(source))
 
         cog.create_cog(source, output_path)
 

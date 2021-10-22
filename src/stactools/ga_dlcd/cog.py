@@ -34,16 +34,23 @@ def create_cog(
             logger.info(
                 "Would have downloaded TIF, created COG, and written COG")
         else:
+            logger.info("Converting TIFF to COG")
+            logger.debug(f"input_path: {input_path}")
+            logger.debug(f"output_path: {output_path}")
             cmd = [
                 "gdal_translate",
                 "-of",
                 "COG",
                 "-co",
+                "NUM_THREADS=ALL_CPUS",
+                "-co",
                 "BLOCKSIZE=512",
                 "-co",
-                "compress=deflate",
+                "COMPRESS=DEFLATE",
                 "-co",
-                "predictor=yes",
+                "LEVEL=9",
+                "-co",
+                "PREDICTOR=YES",
                 "-co",
                 "OVERVIEWS=IGNORE_EXISTING",
                 "-a_nodata",
