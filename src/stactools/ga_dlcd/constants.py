@@ -3,11 +3,12 @@
 from pyproj import CRS
 from pystac import Link, Provider, ProviderRole
 
-GADLCD_ID = "GADLCD"
+GADLCD_ID = "GA-DLCD"
+GADLCD_VERSION = "2.1"
 GADLCD_EPSG = 4326
 GADLCD_CRS_WKT = CRS.from_epsg(GADLCD_EPSG).to_wkt()
 GADLCD_TITLE = "Geoscience Australia Dynamic Land Cover Change"
-GADLCD_DESC = "GA DLCD dataset shows land covers clustered into 22 classes."
+GADLCD_DESC = "GA DLCD dataset shows land covers for Australia clustered into 22 classes."
 LICENSE = "CC-BY-4.0"
 LICENSE_LINK = Link(
     rel="license",
@@ -52,8 +53,8 @@ GADLCD_PROVIDERS = [
 THUMBNAIL_URL = "https://www.ga.gov.au/__data/assets/image/0013/16510/ga-logo.jpg"
 
 GADLCD_BOUNDING_BOX = [110.0, -45.004798, 155.009189, -10.0]
-GADLCD_START_YEAR = '2001'
-GADLCD_END_YEAR = '2015'
+GADLCD_START_YEAR = 2002
+GADLCD_END_YEAR = 2015
 
 NO_DATA_VALUE = 0
 

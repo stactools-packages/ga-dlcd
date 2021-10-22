@@ -40,7 +40,7 @@ class StacTest(unittest.TestCase):
             for path in paths:
                 # Create stac item
                 json_path = os.path.join(tmp_dir, "test.json")
-                item = stac.create_item(json_path, path)
+                item = stac.create_item(path)
                 item.set_self_href(json_path)
                 item.save_object()
 
