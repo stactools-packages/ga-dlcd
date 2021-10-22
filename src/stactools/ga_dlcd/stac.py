@@ -240,13 +240,6 @@ def create_collection() -> pystac.Collection:
                 "values": [value],
                 "summary": summary
             } for value, summary in CLASSIFICATION_VALUES.items()],
-            "label:type":
-            collection_label.label_type[0],
-            "label:tasks":
-            collection_label.label_tasks,
-            "label:properties":
-            None,
-            "label:classes": [collection_label.label_classes[0].to_dict()],
             "proj:epsg":
             collection_proj.epsg[0]
         }),
