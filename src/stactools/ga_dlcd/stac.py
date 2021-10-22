@@ -1,11 +1,11 @@
 import logging
+import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Any, List
 
 import fsspec
 import pystac
-import pytz
 import rasterio
 import shapely
 from pystac.extensions.file import FileExtension
@@ -37,9 +37,11 @@ from stactools.ga_dlcd.constants import (
     GADLCD_PROVIDERS,
     GADLCD_START_YEAR,
     GADLCD_TITLE,
+    GADLCD_VERSION,
     KEYWORDS,
     LICENSE,
     LICENSE_LINK,
+    NO_DATA_VALUE,
     THUMBNAIL_URL,
     WMS_CAPABILITIES_LINK,
 )
@@ -47,7 +49,7 @@ from stactools.ga_dlcd.constants import (
 logger = logging.getLogger(__name__)
 
 
-def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
+def create_item(cog_href: str) -> pystac.Item:
     """Creates a STAC item for Geoscience Australia Dynamic Land Cover Dataset Version 2 dataset.
 
     Args:
@@ -58,19 +60,34 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
         pystac.Item: STAC Item object.
     """
 
-    item_id = cog_href.split(".")[0].split("/")[-1]
+    item_id = os.path.basename(cog_href).replace(".tif", "")
+    match = re.search(
+        r"DLCD_v(.+)_MODIS_EVI_(\d+)_(\d\d\d\d)(\d\d)(\d\d)-(\d\d\d\d)(\d\d)(\d\d)",
+        item_id)
+    if match is None:
+        raise ValueError("Could not extract necessary values from {cog_href}")
+    v, _, start_year, start_month, start_day, end_year, end_month, end_day = match.groups(
+    )
+    version = v.replace('-', '.')
+    if version != GADLCD_VERSION:
+        raise ValueError(
+            f"Provided version {version} is not the expected {GADLCD_VERSION}")
 
-    match = re.search("(?<=DLCD_v2-1_MODIS_EVI_).*", item_id)
-    assert match
-    years = match.group().split("_")[1].split("-")
-
-    utc = pytz.utc
-
-    dataset_datetime = utc.localize(datetime.strptime(years[0], '%Y%m%d'))
+    dataset_datetime = datetime(
+        int(start_year),
+        int(start_month),
+        int(start_day),
+        tzinfo=timezone.utc,
+    )
     start_datetime = dataset_datetime
-    end_datetime = utc.localize(datetime.strptime(years[1], '%Y%m%d'))
+    end_datetime = datetime(
+        int(end_year),
+        int(end_month),
+        int(end_day),
+        tzinfo=timezone.utc,
+    ) + timedelta(days=1) - timedelta(seconds=1)
 
-    title = f"{GADLCD_TITLE} {start_datetime.year} - {end_datetime.year}"
+    title = f"GA DLCD {start_datetime.year} - {end_datetime.year}"
 
     polygon = shapely.geometry.box(*GADLCD_BOUNDING_BOX, ccw=True)
     coordinates = [list(i) for i in list(polygon.exterior.coords)]
@@ -174,10 +191,8 @@ def create_collection(thumbnail_url: str = THUMBNAIL_URL) -> pystac.Collection:
     """
     # Creates a STAC collection for Geoscience Australia Dynamic Land Cover Change dataset
 
-    utc = pytz.utc
-
-    start_datetime = utc.localize(datetime.strptime(GADLCD_START_YEAR, "%Y"))
-    end_datetime = utc.localize(datetime.strptime(GADLCD_END_YEAR, "%Y"))
+    start_datetime = datetime(GADLCD_START_YEAR, 1, 1)
+    end_datetime = datetime(GADLCD_END_YEAR + 1, 1, 1) - timedelta(seconds=1)
 
     collection = pystac.Collection(
         id=GADLCD_ID,
@@ -239,7 +254,7 @@ def create_collection(thumbnail_url: str = THUMBNAIL_URL) -> pystac.Collection:
             "title":
             "Land cover of Canada COG",
             "raster:bands": [
-                RasterBand.create(nodata=0,
+                RasterBand.create(nodata=NO_DATA_VALUE,
                                   sampling=Sampling.AREA,
                                   data_type=DataType.UINT8,
                                   spatial_resolution=250).to_dict()
