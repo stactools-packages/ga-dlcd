@@ -39,6 +39,7 @@ from stactools.ga_dlcd.constants import (
     GADLCD_TITLE,
     LICENSE,
     LICENSE_LINK,
+    THUMBNAIL_URL,
 )
 
 logger = logging.getLogger(__name__)
@@ -161,7 +162,7 @@ def create_item(metadata_url: str, cog_href: str) -> pystac.Item:
     return item
 
 
-def create_collection() -> pystac.Collection:
+def create_collection(thumbnail_url: str = THUMBNAIL_URL) -> pystac.Collection:
     """Create a STAC Collection.
 
     Args:
@@ -190,6 +191,16 @@ def create_collection() -> pystac.Collection:
         catalog_type=pystac.CatalogType.RELATIVE_PUBLISHED,
     )
     collection.add_link(LICENSE_LINK)
+
+    collection.add_asset(
+        "thumbnail",
+        pystac.Asset(
+            href=thumbnail_url,
+            media_type=pystac.MediaType.PNG,
+            roles=["thumbnail"],
+            title=GADLCD_TITLE,
+        ),
+    )
 
     collection_label = LabelExtension.summaries(collection,
                                                 add_if_missing=True)
