@@ -61,6 +61,7 @@ def create_item(cog_href: str) -> pystac.Item:
     """
 
     item_id = os.path.basename(cog_href).replace(".tif", "")
+    logger.info(f"Creating Item {item_id}")
     match = re.search(
         r"DLCD_v(.+)_MODIS_EVI_(\d+)_(\d\d\d\d)(\d\d)(\d\d)-(\d\d\d\d)(\d\d)(\d\d)",
         item_id)
@@ -99,6 +100,7 @@ def create_item(cog_href: str) -> pystac.Item:
         "description": DESCRIPTION,
     }
 
+    logger.debug("Create Item")
     # Create item
     item = pystac.Item(
         id=item_id,
@@ -116,6 +118,7 @@ def create_item(cog_href: str) -> pystac.Item:
     item_projection = ProjectionExtension.ext(item, add_if_missing=True)
     item_projection.epsg = GADLCD_EPSG
     item_projection.wkt2 = GADLCD_CRS_WKT
+    logger.debug(f"Opening COG with rasterio: {cog_href}")
     with rasterio.open(cog_href) as src:
         item_projection.bbox = list(src.bounds)
         item_projection.transform = list(src.transform)
@@ -156,6 +159,7 @@ def create_item(cog_href: str) -> pystac.Item:
         "summary": summary
     } for value, summary in CLASSIFICATION_VALUES.items()]
     cog_asset_file.values = mapping
+    logger.debug(f"Opening COG with fsspec: {cog_href}")
     with fsspec.open(cog_href) as file:
         size = file.size
         if size is not None:
@@ -177,6 +181,8 @@ def create_item(cog_href: str) -> pystac.Item:
     cog_asset_projection.bbox = item_projection.bbox
     cog_asset_projection.transform = item_projection.transform
     cog_asset_projection.shape = item_projection.shape
+
+    logger.debug("Done Creating Item")
 
     return item
 
